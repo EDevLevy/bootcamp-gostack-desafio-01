@@ -14,6 +14,7 @@ function checkProjectExists(req, res, next) {
   if (idx < 0) {
     return res.status(404).send('Project does not exists');
   }
+  req.idx = idx;
   next();
 }
 
@@ -46,25 +47,19 @@ server.get('/projects', (req, res) => {
 });
 
 server.put('/projects/:id', checkProjectExists, (req, res) => {
-  const { id } = req.params;
   const { title } = req.body;
-  let idx = projects.findIndex((project) => { return project.id === id });
-  projects[idx].title = title;
-  res.json(projects[idx]);
+  projects[req.idx].title = title;
+  res.json(projects[req.idx]);
 });
 
 server.delete('/projects/:id', checkProjectExists, (req, res) => {
-  const { id } = req.params;
-  let idx = projects.findIndex((project) => { return project.id === id });
-  projects.splice(idx, 1);
+  projects.splice(req.idx, 1);
   res.send();
 });
 
 server.post('/projects/:id/tasks', checkProjectExists, (req, res) => {
-  const { id } = req.params;
   const { title } = req.body;
-  let idx = projects.findIndex((project) => { return project.id === id });
-  projects[idx].tasks.push(title);
+  projects[req.idx].tasks.push(title);
   res.send();
 });
 
